@@ -1,0 +1,19 @@
+{
+  "name": "git-timesheet",
+  "module": "./packages/cli/src/main.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./packages/cli/src/main.ts --outdir ./dist --target bun"
+  },
+  "workspaces": [
+    "packages/*",
+    "packages/vcs/*",
+    "packages/reporter/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
