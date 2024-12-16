@@ -1,9 +1,11 @@
 {
     "name": "@git-timesheet/core",
-    "version": "0.0.1",
-    "main": "index.ts",
+    "version": "0.1.0",
+    "main": "src/index.ts",
     "type": "module",
-    "dependencies": {
-        "@git-timesheet/vcs": "workspace:*"
+    "dependencies": {},
+    "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "^5.0.0"
     }
 }

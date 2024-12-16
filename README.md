@@ -43,16 +43,18 @@ The architecture should be as follows:
 - `git-timesheet-reporter` is the reporter service that will be used to generate the report.
     - users will be able to define their own reporter service by implementing the `Reporter` interface.
 
-
 The project should be built with the following structure:
 - `packages/cli` will contain the cli library
 - `packages/core` will contain the core library
-- `packages/vcs` will contain the vcs library
-- `packages/reporter` will contain the reporter service
-- `packages/types` will contain the types of the project
-- `packages/utils` will contain the utils of the project
+- `packages/vcs/core` will contain the vcs library
+- `packages/vcs/git` will contain the git vcs library
+- `packages/reporter/core` will contain the reporter service
+- `packages/reporter/markdown` will contain the markdown reporter service
 
 
+This should be a monorepo project and should be built using bun.
+
+This should use a local user config file to store the user's configuration and settings.
 
 
 
