@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
-import { ConfigManager } from "@git-timesheet/config";
+import { ConfigManager, configSchema } from "@git-timesheet/config";
+import { ZodConf } from "@git-timesheet/config";
 import { TimeSheet, type TimeWindow } from "@git-timesheet/core";
 import { MarkdownReporter } from "@git-timesheet/reporter-markdown";
 import { GitVcsProvider } from "@git-timesheet/vcs-git";
@@ -17,25 +18,30 @@ export function createProgram(configManager: ConfigManager): Command {
     // Config commands
     const configCommand = program.command("config").description("Manage configuration");
 
-    const setCommand = configCommand
+    configCommand
         .command("set")
         .description("Set configuration values")
-        .option("-f, --format <format>", "Default output format (markdown, json, html)", "markdown")
-        .action((options) => {
-            if (options.format) {
-                config.setDefaultFormat(options.format);
-                console.log(`Format set to: ${options.format}`);
-            }
-        });
-
-    // Keep the rest of the set command options separate
-    setCommand
+        .option("-f, --format <format>", "Default output format (markdown, json, html)")
         .option("-w, --window <window>", "Default time window (e.g., 1d, 1w, 1m, 1y)")
         .option("--work-start <time>", "Work day start time (HH:MM)")
         .option("--work-end <time>", "Work day end time (HH:MM)")
         .option("--work-weekends <true|false>", "Include weekends in calculations")
         .action((options) => {
+            console.log("Set command executed with options:", options);
             try {
+                if (options.format) {
+                    console.log("Setting format to:", options.format);
+                    const validFormats = ["markdown", "json", "html"];
+                    if (!validFormats.includes(options.format)) {
+                        throw new Error(
+                            `Invalid format. Must be one of: ${validFormats.join(", ")}`,
+                        );
+                    }
+                    config.setDefaultFormat(options.format);
+                    const newFormat = config.config.defaultFormat;
+                    console.log("Format set, current value:", newFormat);
+                }
+
                 if (options.window) {
                     const match = options.window.match(/^(\d+)([dwmy])$/);
                     if (!match) {
@@ -64,7 +70,7 @@ export function createProgram(configManager: ConfigManager): Command {
                 }
 
                 if (options.workStart || options.workEnd || options.workWeekends !== undefined) {
-                    const workingHours = config.get("workingHours");
+                    const workingHours = config.config.workingHours;
                     const start = options.workStart || workingHours.start;
                     const end = options.workEnd || workingHours.end;
                     const excludeWeekends =
@@ -130,7 +136,7 @@ export function createProgram(configManager: ConfigManager): Command {
         .command("config repo list")
         .description("List configured repositories")
         .action(() => {
-            const repos = config.get("repositories");
+            const repos = config.config.repositories;
             if (repos.length === 0) {
                 console.log("No repositories configured");
                 return;
@@ -177,7 +183,7 @@ export function createProgram(configManager: ConfigManager): Command {
         .command("config author list")
         .description("List author filters")
         .action(() => {
-            const authors = config.get("authors");
+            const authors = config.config.authors;
             if (authors.include.length === 0 && authors.exclude.length === 0) {
                 console.log("No author filters configured");
                 return;
@@ -250,7 +256,7 @@ export function createProgram(configManager: ConfigManager): Command {
                     report = await timesheet.generateReport({ startDate, endDate });
                 } else {
                     // Use default time window from config
-                    const defaultWindow = config.get("defaultTimeWindow");
+                    const defaultWindow = config.config.defaultTimeWindow;
                     report = await timesheet.generateReportByWindow(defaultWindow);
                 }
 
@@ -266,7 +272,7 @@ export function createProgram(configManager: ConfigManager): Command {
 
 // Create and run the program if this is the main module
 if (import.meta.main) {
-    const config = new ConfigManager();
+    const config = new ConfigManager(new ZodConf(configSchema));
     const program = createProgram(config);
     program.parse();
 }

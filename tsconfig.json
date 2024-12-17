@@ -45,7 +45,8 @@
             "@git-timesheet/reporter": ["./packages/reporter/core/src/index.ts"],
             "@git-timesheet/vcs-git": ["./packages/vcs/git/src/index.ts"],
             "@git-timesheet/reporter-markdown": ["./packages/reporter/markdown/src/index.ts"],
-            "@git-timesheet/cli": ["./packages/cli/src/index.ts"]
+            "@git-timesheet/cli": ["./packages/cli/src/index.ts"],
+            "@git-timesheet/config-test": ["./packages/config/test/index.ts"]
         }
     },
     "include": ["packages/**/*.ts", "packages/**/*.tsx"],

@@ -47,7 +47,14 @@ export const configSchema = z.object({
                 .regex(timeRegex, "Invalid time format. Use HH:MM (24-hour format)")
                 .refine((time) => {
                     const [hours, minutes] = time.split(":").map(Number);
-                    return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
+                    return (
+                        typeof hours !== "undefined" &&
+                        hours >= 0 &&
+                        hours < 24 &&
+                        typeof minutes !== "undefined" &&
+                        minutes >= 0 &&
+                        minutes < 60
+                    );
                 }, "Invalid time value")
                 .default("09:00"),
             end: z
@@ -55,7 +62,14 @@ export const configSchema = z.object({
                 .regex(timeRegex, "Invalid time format. Use HH:MM (24-hour format)")
                 .refine((time) => {
                     const [hours, minutes] = time.split(":").map(Number);
-                    return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
+                    return (
+                        typeof hours !== "undefined" &&
+                        hours >= 0 &&
+                        hours < 24 &&
+                        typeof minutes !== "undefined" &&
+                        minutes >= 0 &&
+                        minutes < 60
+                    );
                 }, "Invalid time value")
                 .default("17:00"),
             excludeWeekends: z.boolean().default(true),
