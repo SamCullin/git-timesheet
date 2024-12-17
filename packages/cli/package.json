@@ -9,6 +9,7 @@
         "@git-timesheet/core": "workspace:*",
         "@git-timesheet/vcs-git": "workspace:*",
         "@git-timesheet/reporter-markdown": "workspace:*",
+        "@git-timesheet/config": "workspace:*",
         "commander": "^11.1.0"
     },
     "devDependencies": {

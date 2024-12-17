@@ -8,10 +8,7 @@ import type {
 } from "./interfaces";
 
 export class TimeSheet {
-    constructor(
-        private vcsProvider: VcsProvider,
-        private reportGenerator: ReportGenerator,
-    ) {}
+    constructor(private vcsProvider: VcsProvider, private reportGenerator: ReportGenerator) {}
 
     private calculateTimeWindow(window: TimeWindow): TimeRange {
         const endDate = new Date();

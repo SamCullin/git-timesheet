@@ -2,6 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import type { CommitInfo, DailyStats, ReportGenerator, TimeRange, VcsProvider } from "./interfaces";
 import { TimeSheet } from "./timesheet";
 
+type DateConstructorArgs =
+    | [string | number | Date]
+    | [number, number?, number?, number?, number?, number?, number?];
+type MockCalls<T> = { mock: { calls: T[][] } };
+
 describe("TimeSheet", () => {
     let mockVcs: VcsProvider;
     let mockReporter: ReportGenerator;
@@ -72,27 +77,36 @@ describe("TimeSheet", () => {
 
             await timesheet.generateReport(timeRange);
 
-            const reporterCalls = (mockReporter.generateReport as any).mock.calls;
+            const reporterCalls = (
+                mockReporter.generateReport as unknown as MockCalls<DailyStats[]>
+            ).mock.calls;
             expect(reporterCalls).toHaveLength(1);
 
-            const dailyStats = reporterCalls[0][0] as DailyStats[];
+            const dailyStats = reporterCalls[0]?.[0];
+            expect(dailyStats).toBeDefined();
             expect(dailyStats).toHaveLength(2); // Two days
 
             // Check first day stats
-            const firstDay = dailyStats[0];
-            expect(firstDay.date.toISOString().split("T")[0]).toBe("2024-01-10");
-            expect(firstDay.commits).toHaveLength(2);
-            expect(firstDay.firstCommitTime).toEqual(new Date("2024-01-10T09:00:00Z"));
-            expect(firstDay.lastCommitTime).toEqual(new Date("2024-01-10T17:00:00Z"));
-            expect(firstDay.totalTimeSpent).toBe(480); // 8 hours in minutes
+            const firstDay = dailyStats?.[0];
+            expect(firstDay).toBeDefined();
+            if (firstDay) {
+                expect(firstDay.date.toISOString().split("T")[0]).toBe("2024-01-10");
+                expect(firstDay.commits).toHaveLength(2);
+                expect(firstDay.firstCommitTime).toEqual(new Date("2024-01-10T09:00:00Z"));
+                expect(firstDay.lastCommitTime).toEqual(new Date("2024-01-10T17:00:00Z"));
+                expect(firstDay.totalTimeSpent).toBe(480); // 8 hours in minutes
+            }
 
             // Check second day stats
-            const secondDay = dailyStats[1];
-            expect(secondDay.date.toISOString().split("T")[0]).toBe("2024-01-11");
-            expect(secondDay.commits).toHaveLength(1);
-            expect(secondDay.firstCommitTime).toEqual(new Date("2024-01-11T10:00:00Z"));
-            expect(secondDay.lastCommitTime).toEqual(new Date("2024-01-11T10:00:00Z"));
-            expect(secondDay.totalTimeSpent).toBe(0); // Same time for first and last commit
+            const secondDay = dailyStats?.[1];
+            expect(secondDay).toBeDefined();
+            if (secondDay) {
+                expect(secondDay.date.toISOString().split("T")[0]).toBe("2024-01-11");
+                expect(secondDay.commits).toHaveLength(1);
+                expect(secondDay.firstCommitTime).toEqual(new Date("2024-01-11T10:00:00Z"));
+                expect(secondDay.lastCommitTime).toEqual(new Date("2024-01-11T10:00:00Z"));
+                expect(secondDay.totalTimeSpent).toBe(0); // Same time for first and last commit
+            }
         });
 
         it("should handle commits out of order", async () => {
@@ -124,13 +138,20 @@ describe("TimeSheet", () => {
 
             await timesheet.generateReport(timeRange);
 
-            const reporterCalls = (mockReporter.generateReport as any).mock.calls;
-            const dailyStats = reporterCalls[0][0] as DailyStats[];
-            const day = dailyStats[0];
+            const reporterCalls = (
+                mockReporter.generateReport as unknown as MockCalls<DailyStats[]>
+            ).mock.calls;
+            const dailyStats = reporterCalls[0]?.[0];
+            expect(dailyStats).toBeDefined();
+            expect(dailyStats).toHaveLength(1);
 
-            expect(day.firstCommitTime).toEqual(new Date("2024-01-10T09:00:00Z"));
-            expect(day.lastCommitTime).toEqual(new Date("2024-01-10T17:00:00Z"));
-            expect(day.totalTimeSpent).toBe(480);
+            const day = dailyStats?.[0];
+            expect(day).toBeDefined();
+            if (day) {
+                expect(day.firstCommitTime).toEqual(new Date("2024-01-10T09:00:00Z"));
+                expect(day.lastCommitTime).toEqual(new Date("2024-01-10T17:00:00Z"));
+                expect(day.totalTimeSpent).toBe(480);
+            }
         });
     });
 
@@ -144,14 +165,16 @@ describe("TimeSheet", () => {
             // Mock Date.now() to return a fixed date
             fixedDate = new Date("2024-01-16T12:00:00Z");
             global.Date = class extends RealDate {
-                constructor(...args: any[]) {
-                    if (args.length === 0) {
+                constructor(...args: DateConstructorArgs) {
+                    if ((args as unknown as number[]).length === 0) {
                         super(fixedDate);
                     } else {
-                        super(...args);
+                        const ars = args[0] as unknown as number[];
+                        //@ts-ignore
+                        super(...ars);
                     }
                 }
-                static now() {
+                static override now() {
                     return fixedDate.getTime();
                 }
             } as DateConstructor;
@@ -166,36 +189,52 @@ describe("TimeSheet", () => {
             const window = { unit: "day" as const, value: 7 };
             await timesheet.generateReportByWindow(window);
 
-            const vcsCall = (mockVcs.getCommits as any).mock.calls[0][0] as TimeRange;
-            expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2024-01-09");
-            expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            const vcsCall = (mockVcs.getCommits as unknown as MockCalls<TimeRange>).mock
+                .calls[0]?.[0];
+            expect(vcsCall).toBeDefined();
+            if (vcsCall) {
+                expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2024-01-09");
+                expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            }
         });
 
         it("should calculate correct time range for weeks", async () => {
             const window = { unit: "week" as const, value: 2 };
             await timesheet.generateReportByWindow(window);
 
-            const vcsCall = (mockVcs.getCommits as any).mock.calls[0][0] as TimeRange;
-            expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2024-01-02");
-            expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            const vcsCall = (mockVcs.getCommits as unknown as MockCalls<TimeRange>).mock
+                .calls[0]?.[0];
+            expect(vcsCall).toBeDefined();
+            if (vcsCall) {
+                expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2024-01-02");
+                expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            }
         });
 
         it("should calculate correct time range for months", async () => {
             const window = { unit: "month" as const, value: 1 };
             await timesheet.generateReportByWindow(window);
 
-            const vcsCall = (mockVcs.getCommits as any).mock.calls[0][0] as TimeRange;
-            expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2023-12-16");
-            expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            const vcsCall = (mockVcs.getCommits as unknown as MockCalls<TimeRange>).mock
+                .calls[0]?.[0];
+            expect(vcsCall).toBeDefined();
+            if (vcsCall) {
+                expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2023-12-16");
+                expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            }
         });
 
         it("should calculate correct time range for years", async () => {
             const window = { unit: "year" as const, value: 1 };
             await timesheet.generateReportByWindow(window);
 
-            const vcsCall = (mockVcs.getCommits as any).mock.calls[0][0] as TimeRange;
-            expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2023-01-16");
-            expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            const vcsCall = (mockVcs.getCommits as unknown as MockCalls<TimeRange>).mock
+                .calls[0]?.[0];
+            expect(vcsCall).toBeDefined();
+            if (vcsCall) {
+                expect(vcsCall.startDate.toISOString().split("T")[0]).toBe("2023-01-16");
+                expect(vcsCall.endDate.toISOString().split("T")[0]).toBe("2024-01-16");
+            }
         });
     });
 });

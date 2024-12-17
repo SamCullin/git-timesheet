@@ -31,7 +31,7 @@
     "javascript": {
         "formatter": {
             "quoteStyle": "double",
-            "trailingCommas": "all",
+            "trailingComma": "all",
             "semicolons": "always"
         }
     }

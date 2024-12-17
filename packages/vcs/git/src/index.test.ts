@@ -1,17 +1,39 @@
 import { beforeEach, describe, expect, it, mock } from "bun:test";
-import type { DiffResult } from "simple-git";
+import type { DiffResult, Response, SimpleGitTaskCallback, TaskOptions } from "simple-git";
 import { GitVcsProvider } from "./index";
 
+type MockGit = {
+    revparse: (
+        option?: string | TaskOptions,
+        options?: TaskOptions,
+        callback?: SimpleGitTaskCallback<string>,
+    ) => Response<string>;
+    branch: (
+        options?: TaskOptions,
+        callback?: SimpleGitTaskCallback<{ current: string }>,
+    ) => Response<{
+        current: string;
+    }>;
+    log: <T>(
+        options?: TaskOptions,
+        callback?: SimpleGitTaskCallback<{ all: T[] }>,
+    ) => Response<{ all: T[] }>;
+};
+
 describe("GitVcsProvider", () => {
-    let mockGit: any;
+    let mockGit: Partial<MockGit>;
     let provider: GitVcsProvider;
 
     beforeEach(() => {
         // Reset mocks before each test
         mockGit = {
-            revparse: mock(() => Promise.resolve("/home/mullin/code/git-timesheet")),
-            branch: mock(() => Promise.resolve({ current: "main" })),
-            log: mock(() => Promise.resolve({ all: [] })),
+            revparse: mock(() =>
+                Promise.resolve("/home/mullin/code/git-timesheet"),
+            ) as unknown as MockGit["revparse"],
+            branch: mock(() =>
+                Promise.resolve({ current: "main" }),
+            ) as unknown as MockGit["branch"],
+            log: mock(() => Promise.resolve({ all: [] })) as unknown as MockGit["log"],
         };
 
         // Mock the simple-git module
@@ -21,7 +43,7 @@ describe("GitVcsProvider", () => {
 
         provider = new GitVcsProvider();
         // Replace the git instance with our mock
-        (provider as any).git = mockGit;
+        (provider as unknown as { git: typeof mockGit }).git = mockGit;
     });
 
     describe("getCurrentRepository", () => {
@@ -32,7 +54,9 @@ describe("GitVcsProvider", () => {
         });
 
         it("should throw error for non-git repository", async () => {
-            mockGit.revparse = mock(() => Promise.reject(new Error()));
+            mockGit.revparse = mock(() =>
+                Promise.reject(new Error()),
+            ) as unknown as MockGit["revparse"];
             await expect(provider.getCurrentRepository()).rejects.toThrow("Not a git repository");
         });
     });
@@ -70,7 +94,7 @@ describe("GitVcsProvider", () => {
                 ],
             };
 
-            mockGit.log = mock(() => Promise.resolve(mockCommits));
+            mockGit.log = mock(() => Promise.resolve(mockCommits)) as unknown as MockGit["log"];
 
             const result = await provider.getCommits(timeRange);
 
