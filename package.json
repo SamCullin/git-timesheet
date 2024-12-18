@@ -37,5 +37,22 @@
         "LICENSE"
     ],
     "main": "dist/index.js",
-    "types": "dist/index.d.ts"
+    "types": "dist/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/samcullin/git-timesheet.git"
+    },
+    "keywords": [
+        "git",
+        "timesheet",
+        "time-tracking",
+        "productivity",
+        "cli"
+    ],
+    "author": "Sam Cullin <https://x.com/Sam_Cullin>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/samcullin/git-timesheet/issues"
+    },
+    "homepage": "https://github.com/samcullin/git-timesheet#readme"
 }
