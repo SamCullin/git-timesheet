@@ -1,6 +1,7 @@
 import type { ReportGenerator } from "@git-timesheet/reporter";
 import type { VcsProvider } from "@git-timesheet/vcs";
-import type { TimeRange } from "./interfaces";
+import type { TimeRange, TimeWindow } from "./interfaces";
+import { windowToRange } from "./util";
 
 type Options = {
     timeRange: TimeRange;
@@ -17,5 +18,13 @@ export class TimeSheet {
             date_range: options.timeRange,
         });
         return this.reportGenerator.generateReport(commits);
+    }
+
+    async generateReportByWindow(window: TimeWindow): Promise<string> {
+        const timeRange = windowToRange(window);
+        return this.generateReport({
+            repositories: [],
+            timeRange,
+        });
     }
 }
