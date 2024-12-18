@@ -16,7 +16,11 @@
         "lint": "bunx @biomejs/biome check ./packages",
         "lint:fix": "bunx @biomejs/biome check --apply ./packages",
         "format": "bunx @biomejs/biome format ./packages",
-        "format:fix": "bunx @biomejs/biome format --write ./packages"
+        "format:fix": "bunx @biomejs/biome format --write ./packages",
+        "prepublishOnly": "npm run build",
+        "lint": "eslint . --ext .ts,.tsx",
+        "test": "jest",
+        "build": "tsc"
     },
     "workspaces": ["packages/*", "packages/vcs/*", "packages/reporter/*"],
     "devDependencies": {
@@ -29,5 +33,12 @@
     },
     "engines": {
         "bun": ">=1.0.0"
-    }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts"
 }
