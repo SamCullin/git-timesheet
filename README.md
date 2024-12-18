@@ -58,6 +58,30 @@ This should use a local user config file to store the user's configuration and s
 
 
 
+```bash
+Usage: git-timesheet [options] [command]
+
+Generate timesheet reports from git history
+
+Options:
+  -V, --version                         output the version number
+  -s, --start-date <date>               Start date (YYYY-MM-DD)
+  -e, --end-date <date>                 End date (YYYY-MM-DD)
+  -w, --window <window>                 Time window (e.g., 1d, 1w, 1m, 1y)
+  -f, --format <format>                 Output format (markdown, json, html)
+  -r, --repo <path>                     Repository path (defaults to current directory)
+  -h, --help                            display help for command
+
+Commands:
+  repo add <label> <path>
+  repo remove <label>
+  repo list
+  author add <author>
+  author remove <author>
+  author list
+  show
+```
+
 
 
 

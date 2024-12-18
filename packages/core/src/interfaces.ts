@@ -20,8 +20,10 @@ export interface TimeRange {
     endDate: Date;
 }
 
+export type TimeWindowUnit = "day" | "week" | "month" | "year";
+
 export interface TimeWindow {
-    unit: "day" | "week" | "month" | "year";
+    unit: TimeWindowUnit;
     value: number;
 }
 

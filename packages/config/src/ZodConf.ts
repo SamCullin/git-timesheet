@@ -11,6 +11,7 @@ export class ZodConf<T extends z.ZodObject<z.ZodRawShape>>
         const defaults: z.infer<T> = schema.parse({});
         super({
             configName: "@git-timesheet/cli",
+            projectName: "@git-timesheet/cli",
             defaults,
         });
 

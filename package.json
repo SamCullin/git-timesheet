@@ -8,14 +8,14 @@
         "git-timesheet": "./dist/main.js"
     },
     "scripts": {
-        "build": "bun build ./packages/cli/src/main.ts --outdir ./dist --target bun",
+        "build": "bun build ./packages/cli/src/main.ts --outdir ./dist --target bun --sourcemap",
         "dev": "bun run --watch ./packages/cli/src/main.ts",
         "test": "bun test",
         "test:watch": "bun test --watch",
-        "lint": "bunx @biomejs/biome check .",
-        "lint:fix": "bunx @biomejs/biome check --apply .",
-        "format": "bunx @biomejs/biome format .",
-        "format:fix": "bunx @biomejs/biome format --write ."
+        "lint": "bunx @biomejs/biome check ./packages",
+        "lint:fix": "bunx @biomejs/biome check --apply ./packages",
+        "format": "bunx @biomejs/biome format ./packages",
+        "format:fix": "bunx @biomejs/biome format --write ./packages"
     },
     "workspaces": ["packages/*", "packages/vcs/*", "packages/reporter/*"],
     "devDependencies": {
