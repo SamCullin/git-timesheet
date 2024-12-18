@@ -17,10 +17,7 @@
         "lint:fix": "bunx @biomejs/biome check --apply ./packages",
         "format": "bunx @biomejs/biome format ./packages",
         "format:fix": "bunx @biomejs/biome format --write ./packages",
-        "prepublishOnly": "npm run build",
-        "lint": "eslint . --ext .ts,.tsx",
-        "test": "jest",
-        "build": "tsc"
+        "prepublishOnly": "bun run build"
     },
     "workspaces": ["packages/*", "packages/vcs/*", "packages/reporter/*"],
     "devDependencies": {
