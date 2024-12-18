@@ -41,23 +41,23 @@ describe("ConfigManager", () => {
 
     describe("repositories", () => {
         it("should add repository", () => {
-            config.addRepository("/test/repo", "Test Repo", "main");
+            config.addRepository("/test/repo", "Test Repo");
             const repos = config.config.repositories;
-            expect(repos).toEqual([{ path: "/test/repo", name: "Test Repo", branch: "main" }]);
+            expect(repos).toEqual([{ path: "/test/repo", name: "Test Repo" }]);
         });
 
         it("should add repository without optional fields", () => {
-            config.addRepository("/test/repo");
+            config.addRepository("/test/repo", "Test Repo");
             const repos = config.config.repositories;
-            expect(repos).toEqual([{ path: "/test/repo" }]);
+            expect(repos).toEqual([{ path: "/test/repo", name: "Test Repo" }]);
         });
 
         it("should remove repository", () => {
-            config.addRepository("/test/repo1");
-            config.addRepository("/test/repo2");
+            config.addRepository("/test/repo1", "Test Repo 1");
+            config.addRepository("/test/repo2", "Test Repo 2");
             config.removeRepository("/test/repo1");
             const repos = config.config.repositories;
-            expect(repos).toEqual([{ path: "/test/repo2" }]);
+            expect(repos).toEqual([{ path: "/test/repo2", name: "Test Repo 2" }]);
         });
     });
 
@@ -139,7 +139,7 @@ describe("ConfigManager", () => {
     describe("reset", () => {
         it("should reset to defaults", () => {
             config.setDefaultFormat("json");
-            config.addRepository("/test/repo");
+            config.addRepository("/test/repo", "Test Repo");
             config.addAuthor("John Doe");
             config.reset();
 

@@ -16,9 +16,9 @@ export class ConfigManager {
         this.conf.reset();
     }
 
-    addRepository(path: string, name?: string, branch?: string): void {
+    addRepository(path: string, name: string): void {
         const repositories = this.conf.get("repositories");
-        repositories.push({ path, name, branch });
+        repositories.push({ path, name });
         this.conf.set("repositories", repositories);
     }
 
