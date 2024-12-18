@@ -46,30 +46,7 @@ describe("GitVcsProvider", () => {
         (provider as unknown as { git: typeof mockGit }).git = mockGit;
     });
 
-    describe("getCurrentRepository", () => {
-        it("should return parent directory of git root", async () => {
-            const result = await provider.getCurrentRepository();
-            expect(result).toBe("/home/mullin/code");
-            expect(mockGit.revparse).toHaveBeenCalledWith(["--show-toplevel"]);
-        });
-
-        it("should throw error for non-git repository", async () => {
-            mockGit.revparse = mock(() =>
-                Promise.reject(new Error()),
-            ) as unknown as MockGit["revparse"];
-            await expect(provider.getCurrentRepository()).rejects.toThrow("Not a git repository");
-        });
-    });
-
-    describe("getCurrentBranch", () => {
-        it("should return current branch name", async () => {
-            const result = await provider.getCurrentBranch();
-            expect(result).toBe("main");
-            expect(mockGit.branch).toHaveBeenCalled();
-        });
-    });
-
-    describe("getCommits", () => {
+    describe("getLog", () => {
         it("should return commits within time range", async () => {
             const timeRange = {
                 startDate: new Date("2024-01-01"),
@@ -96,14 +73,17 @@ describe("GitVcsProvider", () => {
 
             mockGit.log = mock(() => Promise.resolve(mockCommits)) as unknown as MockGit["log"];
 
-            const result = await provider.getCommits(timeRange);
+            const result = await provider.getLog({
+                repositories: ["."],
+                date_range: timeRange,
+            });
 
             expect(result).toHaveLength(1);
             expect(result[0]).toEqual({
                 hash: "abc1234",
                 datetime: new Date("2024-01-10T10:00:00Z"),
                 message: "Test commit",
-                repository: "/home/mullin/code/git-timesheet",
+                repository: ".",
                 targetDirectory: "src",
                 branch: "main",
             });
@@ -131,7 +111,10 @@ describe("GitVcsProvider", () => {
                 endDate: new Date("2024-01-31"),
             };
 
-            const result = await provider.getCommits(timeRange);
+            const result = await provider.getLog({
+                repositories: ["."],
+                date_range: timeRange,
+            });
             expect(result).toHaveLength(0);
         });
     });

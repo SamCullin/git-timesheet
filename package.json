@@ -8,6 +8,7 @@
         "git-timesheet": "./dist/main.js"
     },
     "scripts": {
+        "t": "bun run ./packages/cli/src/main.ts",
         "build": "bun build ./packages/cli/src/main.ts --outdir ./dist --target bun --sourcemap",
         "dev": "bun run --watch ./packages/cli/src/main.ts",
         "test": "bun test",

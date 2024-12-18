@@ -24,7 +24,7 @@ export class ConfigManager {
 
     removeRepository(path: string): void {
         const repositories = this.conf.get("repositories");
-        const index = repositories.findIndex((repo) => repo.path === path);
+        const index = repositories.findIndex((repo) => repo.path === path || repo.name === path);
         if (index !== -1) {
             repositories.splice(index, 1);
             this.conf.set("repositories", repositories);

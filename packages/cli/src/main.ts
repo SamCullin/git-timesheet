@@ -20,8 +20,10 @@ export function createProgram(configManager: ConfigManager): Command {
         .option("-f, --format <format>", "Output format (markdown, json, html)")
         .option("-r, --repo <path>", "Repository path (defaults to current directory)");
 
-    program
-        .command("repo add")
+    const repo_cmd = program.command("repo");
+
+    repo_cmd
+        .command("add")
         .description("Add a repository")
         .argument("<label>", "Label for the repository")
         .argument("<path>", "Path to the repository")
@@ -35,8 +37,8 @@ export function createProgram(configManager: ConfigManager): Command {
             }
         });
 
-    program
-        .command("repo remove")
+    repo_cmd
+        .command("remove")
         .description("Remove a repository")
         .argument("<label>", "Label of the repository")
         .action((label) => {
@@ -49,8 +51,8 @@ export function createProgram(configManager: ConfigManager): Command {
             }
         });
 
-    program
-        .command("repo list")
+    repo_cmd
+        .command("list")
         .description("List configured repositories")
         .action(() => {
             const repos = config.config.repositories;
@@ -64,8 +66,10 @@ export function createProgram(configManager: ConfigManager): Command {
             }
         });
 
-    program
-        .command("author add")
+    const author_cmd = program.command("author");
+
+    author_cmd
+        .command("add")
         .description("Add an author")
         .argument("<author>", "Author name or email")
         .action((author) => {
@@ -78,8 +82,8 @@ export function createProgram(configManager: ConfigManager): Command {
             }
         });
 
-    program
-        .command("author remove")
+    author_cmd
+        .command("remove")
         .description("Remove an author")
         .argument("<author>", "Author name or email")
         .action((author) => {
@@ -92,8 +96,8 @@ export function createProgram(configManager: ConfigManager): Command {
             }
         });
 
-    program
-        .command("author list")
+    author_cmd
+        .command("list")
         .description("List authors")
         .action(() => {
             const authors = config.config.authors;
@@ -135,7 +139,10 @@ export function createProgram(configManager: ConfigManager): Command {
             if (options.window) {
                 const parsedWindow = parseWindow(options.window);
                 const timeRange = windowToRange(parsedWindow);
-                report = await timesheet.generateReport(timeRange);
+                report = await timesheet.generateReport({
+                    timeRange,
+                    repositories: config.config.repositories.map((repo) => repo.path),
+                });
             } else if (options.startDate && options.endDate) {
                 const startDate = new Date(options.startDate);
                 const endDate = new Date(options.endDate);
@@ -144,12 +151,18 @@ export function createProgram(configManager: ConfigManager): Command {
                     throw new Error("Invalid date format. Use YYYY-MM-DD");
                 }
 
-                report = await timesheet.generateReport({ startDate, endDate });
+                report = await timesheet.generateReport({
+                    timeRange: { startDate, endDate },
+                    repositories: config.config.repositories.map((repo) => repo.path),
+                });
             } else {
                 // Use default time window from config
                 const defaultWindow = config.config.defaultTimeWindow;
                 const timeRange = windowToRange(defaultWindow);
-                report = await timesheet.generateReport(timeRange);
+                report = await timesheet.generateReport({
+                    timeRange,
+                    repositories: config.config.repositories.map((repo) => repo.path),
+                });
             }
 
             console.log(report);
