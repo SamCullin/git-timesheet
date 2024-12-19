@@ -7,9 +7,6 @@ on:
         branches: [main]
     # Allow manual trigger
     workflow_dispatch:
-    # Enable publishing on new tags
-    release:
-        types: [created]
 
 jobs:
     build-test:
@@ -34,14 +31,16 @@ jobs:
             - name: Build
               run: bun run build
 
-    publish:
+    release:
         needs: build-test
         runs-on: ubuntu-latest
-        # Only publish on release
-        if: github.event_name == 'release'
+        if: github.ref == 'refs/heads/main'
 
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v1
@@ -54,7 +53,8 @@ jobs:
             - name: Build
               run: bun run build
 
-            - name: Publish to npm
-              run: bunx npm publish --access public
+            - name: Release
               env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: bunx semantic-release
