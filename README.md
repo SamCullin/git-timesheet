@@ -18,15 +18,24 @@ A tool to generate timesheets from git history
 ## Features
 
 - Generate timesheets from git commit history
-- Customizable date ranges
-- Multiple output formats
-- Support for multiple git repositories
-- Workspace and project grouping
+- Customizable date ranges & windows
+- Support for multiple output formats (PRs welcome)
+- Support for multiple vcs (PRs welcome)
+- Supports multiple repositories
+
+
+## TODOs (looking for help)
+- Workspace and project grouping 
+- User and team grouping
+
 
 ## Installation
 
 ```bash
-bun install -g git-timesheet
+bun add -g git-timesheet
+npm install -g git-timesheet
+pnpm install -g git-timesheet
+yarn add global git-timesheet
 ```
 
 ## Usage
