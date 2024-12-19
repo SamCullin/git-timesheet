@@ -1,11 +1,15 @@
 {
-    "name": "git-timesheet",
+    "name": "@samcullin/git-timesheet",
     "version": "0.1.0",
     "description": "A tool to generate timesheets from git history",
     "module": "./packages/cli/src/main.ts",
     "type": "module",
     "bin": {
         "git-timesheet": "./dist/main.js"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     },
     "scripts": {
         "t": "bun run ./packages/cli/src/main.ts",

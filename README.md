@@ -32,10 +32,10 @@ A tool to generate timesheets from git history
 ## Installation
 
 ```bash
-bun add -g git-timesheet
-npm install -g git-timesheet
-pnpm install -g git-timesheet
-yarn add global git-timesheet
+bun add -g @samcullin/git-timesheet
+npm install -g @samcullin/git-timesheet
+pnpm install -g @samcullin/git-timesheet
+yarn add global @samcullin/git-timesheet
 ```
 
 ## Usage
