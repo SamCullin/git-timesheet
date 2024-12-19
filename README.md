@@ -41,7 +41,30 @@ yarn add global @samcullin/git-timesheet
 ## Usage
 
 ```bash
-git-timesheet --from "2024-01-01" --to "2024-01-31"
+git-timesheet -h
+```
+```log
+Usage: git-timesheet [options] [command]
+
+Generate timesheet reports from git history
+
+Options:
+  -V, --version            output the version number
+  -s, --start-date <date>  Start date (YYYY-MM-DD)
+  -e, --end-date <date>    End date (YYYY-MM-DD)
+  -w, --window <window>    Time window (e.g., 1d, 1w, 1m, 1y)
+  -f, --format <format>    Output format (markdown, json, html)
+  -r, --repo <path>        Repository path (defaults to current directory)
+  -h, --help               display help for command
+
+Commands:
+  repo
+  author
+  show                     Show current configuration
+```
+
+```bash
+git-timesheet --window 1w
 ```
 
 For more detailed usage instructions and options, see our [documentation](https://github.com/samcullin/git-timesheet#documentation).
